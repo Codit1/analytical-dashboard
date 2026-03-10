@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+@theme {
+  --breakpoint-lgc: 62rem;
+  --breakpoint-mdc: 600px;
+  --breakpoint-xlc: 1200px;
+
+ }
+
+body{
+    background-color: #1B1B1D;
+    height: 100vh;
+}
