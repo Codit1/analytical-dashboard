@@ -13,7 +13,7 @@ function MainLayouts() {
 
             <div className='xlc:flex'>
                 <SideMenu />
-                <div className='xlc:w-full'>
+                <div className='xlc:w-full h-screen overflow-auto'>
                     <Outlet />
                 </div>
             </div>
