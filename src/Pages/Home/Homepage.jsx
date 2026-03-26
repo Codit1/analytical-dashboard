@@ -4,7 +4,7 @@ import React from 'react'
 import "./homepage.css"
 
 // for mantine imp
-import { Group, Text, Center } from '@mantine/core';
+import { Group, Text, Center, Badge, Stack } from '@mantine/core';
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 
 // for comp imp
@@ -14,76 +14,67 @@ import Loading1 from './components/Loading1';
 import { FaFileUpload } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { IoImagesOutline } from "react-icons/io5";
+import { MdLensBlur } from "react-icons/md";
+import { AiOutlineCloudUpload } from "react-icons/ai";
 
 function Homepage() {
     return (
-        <div className='mt-4 px-2'>
+        <div className='bg-[#F2F6FF] h-screen'>
 
-            {/* <div className='grid grid-cols-2 gap-2'>
-                <Loading1/>
-            </div> */}
-
-            <div className='grid grid-cols-2 gap-4 lgc:grid-cols-4'>
-                <div className='h-25 bg-[#5A5A5C] rounded-md skeleton'>
-                    <Center h="100%">
-                        <Text truncate ta="center" c={"white"} fw={"bold"}>No File to analysize</Text>
-                    </Center>
-                </div>
-                <div className='h-25 bg-[#5A5A5C] rounded-md skeleton'>
-                    <Center h="100%">
-                        <Text truncate ta="center" c={"white"} fw={"bold"}>No File to analysize</Text>
-                    </Center>
-                </div>
-                <div className='h-25 bg-[#5A5A5C] rounded-md skeleton'>
-                    <Center h="100%">
-                        <Text truncate ta="center" c={"white"} fw={"bold"}>No File to analysize</Text>
-                    </Center>
-                </div>
-                <div className='h-25 bg-[#5A5A5C] rounded-md skeleton'>
-                    <Center h="100%">
-                        <Text truncate ta="center" c={"white"} fw={"bold"}>No File to analysize</Text>
-                    </Center>
+            <div className='p-3 shadow-md border-b border-b-slate-300'>
+                <div className='flex justify-center space-x-2'>
+                    <MdLensBlur size={30} stroke='2'/>
+                    <h2 className='font-bold text-lg'>
+                        <span>Data</span>
+                        <span className='text-blue-300 italic'>Lens</span>
+                    </h2>
                 </div>
             </div>
 
-            <div className='mt-4'>
+            <div className='w-[80%] mx-auto mt-8'>
                 <Dropzone
-                    onDrop={(files) => console.log('accepted files', files)}
-                    onReject={(files) => console.log('rejected files', files)}
+                    onDrop={(files) => console.log(files)}
+                    onReject={(files) => console.log(files)}
                     maxSize={5 * 1024 ** 2}
                     accept={IMAGE_MIME_TYPE}
-                    // h={{
-                    //     base: "80vh"
-                    // }}
-                    bg={"#5A5A5C"}
+                    // h={{ base: "70vh" }}
+                    bg="#E5EEFF"
                 >
-                    <Group justify="center" gap="xl" mih={220} style={{ pointerEvents: 'none' }}>
-                        <Dropzone.Accept>
-                            <FaFileUpload size={52} color="white" stroke={1.5} />
-                        </Dropzone.Accept>
+                    <Center h="65vh">
+                        <Stack align="center" gap="2px">
+                            <AiOutlineCloudUpload size={50} color="#1971C2" />
 
-                        <Dropzone.Reject>
-                            <MdErrorOutline size={52} color="var(--mantine-color-red-6)" stroke={1.5} />
-                        </Dropzone.Reject>
-
-                        <Dropzone.Idle>
-                            <IoImagesOutline size={52} color="var(--mantine-color-dimmed)" stroke={1.5} />
-                        </Dropzone.Idle>
-
-                        <div>
-                            <Text size="xl" inline c={"white"}>
-                                Drag images here or click to select files
+                            <Text size="xl" c={"black"} fw={"bold"}>
+                                Drag File here or click to select files
                             </Text>
 
-                            <Text size="sm" c={"white"} inline mt={7}>
-                                Attach as many files as you like, each file should not exceed 5mb
-                            </Text>
-                        </div>
-                    </Group>
+                            <div className=''>
+                                <Text c={"gray"} fw={"bold"} fz={"sm"} ta={"center"}>Supported formats:</Text>
+                                <Group gap={"sm"} mt={"4px"}>
+                                    <Badge variant='light'>csv</Badge>
+                                    <Badge >json</Badge>
+                                    <Badge variant='light'>xlsx</Badge>
+                                    <Badge>xls</Badge>
+                                </Group>
+                            </div>
+                        </Stack>
+                    </Center>
                 </Dropzone>
             </div>
 
-            <Loading1/>
+            <div>
+                <Text fz={"md"} fw={"bold"} c={"gray"} ta={"center"} mt={"10px"}>Recent Analysis</Text>
+                <div className='mt-2'>
+                    <Group justify='center' align='center'>
+                        <Badge>Telsa Cars</Badge>
+                        <Badge>Toyota Sales force</Badge>
+                        <Badge>BMW Data</Badge>
+                        <Badge>Dizzy Sales list</Badge>
+                    </Group>
+
+                </div>
+            </div>
+
         </div>
     )
 }

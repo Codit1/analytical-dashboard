@@ -8,12 +8,12 @@ import Footer from '../components/footer/Footer'
 
 function MainLayouts() {
     return (
-        <div className='bg-[#1B1B1D] min-h-screen'>
-            <NavBar />
+        <div className='bg-[#E5E3E6] min-h-screen'>
+            {/* <NavBar /> */}
 
             <div className='xlc:flex'>
                 <SideMenu />
-                <div className='xlc:w-full h-screen overflow-auto'>
+                <div className='xlc:w-full xlc:h-screen overflow-auto'>
                     <Outlet />
                 </div>
             </div>
