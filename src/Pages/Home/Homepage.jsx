@@ -1,23 +1,78 @@
-import React from 'react'
+import { useEffect, useState } from 'react'
 
 // for styles imp
 import "./homepage.css"
 
 // for mantine imp
-import { Group, Text, Center, Badge, Stack } from '@mantine/core';
-import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { Group, Text, Center, Badge, Stack,  } from '@mantine/core';
+import { Dropzone } from '@mantine/dropzone';
+import { notifications } from '@mantine/notifications';
+import { nprogress } from '@mantine/nprogress';
 
-// for comp imp
-import Loading1 from './components/Loading1';
+// for redux imp
+import { useSelector, useDispatch } from 'react-redux';
+import { uploadDataset, selectUploadData, selectUploadError, selectUploadingDataset } from '@store/uploadDataset';
+
+// for react-router imp
+import { useNavigate } from 'react-router';
 
 // for icons imp
-import { FaFileUpload } from "react-icons/fa";
-import { MdErrorOutline } from "react-icons/md";
-import { IoImagesOutline } from "react-icons/io5";
 import { MdLensBlur } from "react-icons/md";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 
 function Homepage() {
+
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const uploadData = useSelector(selectUploadData)
+    const uploadError = useSelector(selectUploadError)
+    const uploadingDataset = useSelector(selectUploadingDataset)
+
+    // state to hold previous uploaded dataset from LocalStorage
+    const [ previousDataset, setPreviousDataset ] = useState([])
+
+    // func to render previous datasets
+    const renderPreviousDatasets = previousDataset.map((data, indx) => (
+        <Badge onClick={() => navigate(`/analysis?id=${data.datasetId}`)} key={indx} >{data.name}</Badge>
+    ))
+
+    // func to upload dataset
+    const sendDataset = (file) => {
+
+        nprogress.start()
+
+        const formdata = new FormData()
+
+        formdata.append("file", file)
+
+        dispatch(uploadDataset(formdata)).unwrap()
+        .then((res) => {
+            nprogress.complete()
+            setPreviousDataset([...previousDataset, {name: file.name, datasetId: res.dataset_id }])
+            localStorage.setItem("dataSets", JSON.stringify([...previousDataset, {name: file.name, datasetId: res.dataset_id }]))
+            navigate(`/analysis?id=${res.dataset_id}`)
+        })
+        .catch(err => {
+            notifications.show({
+                ...err,
+                color: "orange"
+            })
+            nprogress.stop()
+        })
+    }
+
+    useEffect(() => {
+        const previousDataset = localStorage.getItem("dataSets")
+
+        if(previousDataset){
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setPreviousDataset(JSON.parse(previousDataset))
+        } else{
+            setPreviousDataset([])
+        }
+    }, [])
+
     return (
         <div className='bg-[#F2F6FF] h-screen'>
 
@@ -33,12 +88,26 @@ function Homepage() {
 
             <div className='w-[80%] mx-auto mt-8'>
                 <Dropzone
-                    onDrop={(files) => console.log(files)}
-                    onReject={(files) => console.log(files)}
+                    onDrop={(files) => {
+                        console.log(files[0])
+
+                        sendDataset(files[0])
+                    }}
+                    onReject={() => {
+                        notifications.show({
+                            title: "file error",
+                            message: "the file you uploaded can't be processed"
+                        })
+                    }}
                     maxSize={5 * 1024 ** 2}
-                    accept={IMAGE_MIME_TYPE}
-                    // h={{ base: "70vh" }}
+                    accept={[
+                        "text/csv",
+                        "application/json",
+                        "application/vnd.ms-excel",
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    ]}
                     bg="#E5EEFF"
+                    loading={ uploadingDataset }
                 >
                     <Center h="65vh">
                         <Stack align="center" gap="2px">
@@ -51,10 +120,10 @@ function Homepage() {
                             <div className=''>
                                 <Text c={"gray"} fw={"bold"} fz={"sm"} ta={"center"}>Supported formats:</Text>
                                 <Group gap={"sm"} mt={"4px"}>
-                                    <Badge variant='light'>csv</Badge>
-                                    <Badge >json</Badge>
-                                    <Badge variant='light'>xlsx</Badge>
-                                    <Badge>xls</Badge>
+                                    <Badge variant='light'>.csv</Badge>
+                                    <Badge>.json</Badge>
+                                    <Badge color='orange'>.xls</Badge>
+                                    <Badge color='orange' variant='light'>.xlsx</Badge>
                                 </Group>
                             </div>
                         </Stack>
@@ -66,10 +135,7 @@ function Homepage() {
                 <Text fz={"md"} fw={"bold"} c={"gray"} ta={"center"} mt={"10px"}>Recent Analysis</Text>
                 <div className='mt-2'>
                     <Group justify='center' align='center'>
-                        <Badge>Telsa Cars</Badge>
-                        <Badge>Toyota Sales force</Badge>
-                        <Badge>BMW Data</Badge>
-                        <Badge>Dizzy Sales list</Badge>
+                        {renderPreviousDatasets}
                     </Group>
 
                 </div>

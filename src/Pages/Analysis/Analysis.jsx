@@ -1,7 +1,7 @@
-import React from 'react'
+import { useEffect } from 'react'
 
 // for mantine imp
-import { Button, TextInput, ActionIcon, Text } from '@mantine/core'
+import { LoadingOverlay, TextInput, ActionIcon, Text } from '@mantine/core'
 
 // for comp imp
 import ActionBars from './Components/ActionBars'
@@ -13,6 +13,13 @@ import DisplayDataHead from './Components/DisplayDataHead';
 import ShowColumnsTypes from './Components/ShowColumnsTypes';
 import DisplayColumnValueCount from './Components/DisplayColumnValueCount';
 
+// for redux imp
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUploadData, selectUploadingDataset, getDatasetSummary } from '@store/uploadDataset';
+
+// for react-router imp
+import { useNavigate, useSearchParams } from 'react-router';
+
 // for icons imp
 import { FiSearch } from "react-icons/fi";
 import { TiHome } from "react-icons/ti";
@@ -21,12 +28,32 @@ import { ImSearch } from "react-icons/im";
 
 
 function Analysis() {
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const datasetData = useSelector(selectUploadData)
+    const uploadingDataset = useSelector(selectUploadingDataset)
+
+    const [searchParams] = useSearchParams();
+
+    const id = searchParams.get('id')
+
+    // effect to check and get dataset value based on id
+    useEffect(() => {
+        if(datasetData == null ){
+            dispatch(getDatasetSummary(id))
+        }
+    }, [ ])
+
     return (
         <>
 
+            <LoadingOverlay visible={ uploadingDataset }/>
+
             <section className='min-h-screen '>
 
-                <div className='flex justify-center space-x-2 p-4 xlc:hidden bg-white shadow-md'>
+                <div onClick={() => navigate(-1)} className='flex justify-center space-x-2 p-4 xlc:hidden bg-white shadow-md cursor-pointer'>
                     <MdLensBlur size={30} stroke='2'/>
                     <h2 className='font-bold text-lg'>
                         <span>Data</span>
@@ -41,16 +68,6 @@ function Analysis() {
                         <Text fw={"bold"} fz={"lg"} c={"black"}>FileName</Text>
                         
                         <div className='flex items-center justify-end space-x-4 pr-2 mdc:w-[50%]'>
-                            <TextInput 
-                                placeholder='Search'
-                                radius={"xl"}
-                                width={"60%"}
-                                w={{
-                                    base: "60%",
-                                    sm: "60%",
-                                    md: "70%"
-                                }}
-                            />
                             <div className='space-x-4'>
                                 <ActionIcon 
                                     color={"#fff"}
@@ -91,9 +108,9 @@ function Analysis() {
                     <ShowColumnsTypes/>
                 </div>
 
-                <div className='mt-6 px-4'>
+                {/* <div className='mt-6 px-4'>
                     <DisplayColumnValueCount/>
-                </div>
+                </div> */}
                 
                 <div className='mt-6 px-4'>
                     <DisplayDataHead/>

@@ -1,9 +1,20 @@
-import React from 'react'
+// import { useEffect } from 'react'
 
 // for mantine imp
 import { Badge, Flex } from '@mantine/core'
 
+// for redux imp
+import { useSelector } from 'react-redux'
+import { selectUploadData } from '@store/uploadDataset'
+
 function ColumnsList() {
+
+    const data = useSelector(selectUploadData)
+
+    const renderColumns = data?.columns_list.map((column, indx) => (
+        <Badge key={indx} color="white" c={"gray"} size='md'>{column}</Badge>
+    ))
+
     return (
         <>
             <Flex 
@@ -12,11 +23,7 @@ function ColumnsList() {
                 align={"center"}
                 wrap="wrap"
             >
-                <Badge color="white" c={"gray"} size='lg'>Column 1</Badge>
-                <Badge color="white" c={"gray"} size='lg'>Column 2</Badge>
-                <Badge color="white" c={"gray"} size='lg'>Column 3</Badge>
-                <Badge color="white" c={"gray"} size='lg'>Column 4</Badge>
-                <Badge color="white" c={"gray"} size='lg'>Column 5</Badge>
+                {renderColumns}
             </Flex>
         </>
     )

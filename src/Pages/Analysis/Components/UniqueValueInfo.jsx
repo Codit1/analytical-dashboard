@@ -1,19 +1,33 @@
-import React from 'react'
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useState, useEffect } from 'react'
 
 // for mantine imp
 import { Progress, Text } from '@mantine/core'
 import { BarChart } from '@mantine/charts'
 
-const data = [
-  { month: 'January', Smartphones: 1200, Laptops: 900, Tablets: 200 },
-  { month: 'February', Smartphones: 1900, Laptops: 1200, Tablets: 400 },
-  { month: 'March', Smartphones: 400, Laptops: 1000, Tablets: 200 },
-  { month: 'April', Smartphones: 1000, Laptops: 200, Tablets: 800 },
-  { month: 'May', Smartphones: 800, Laptops: 1400, Tablets: 1200 },
-  { month: 'June', Smartphones: 750, Laptops: 600, Tablets: 1000 },
-];
+// for redux imp
+import { useSelector } from 'react-redux'
+import { selectUploadData } from '@store/uploadDataset'
 
 function UniqueValueInfo() {
+
+    const dataset = useSelector(selectUploadData)
+
+    // state to hold unique value count
+    const [uniqueValueCount, setUniqueValueCount] = useState([])
+
+    // useEffect to get unique value count
+    useEffect(() => {
+        if(dataset){
+            const testArr = []
+
+            Object.entries(dataset?.no_unique).forEach(([key, value]) => {
+                testArr.push({name: key, value: value})
+            });
+
+            setUniqueValueCount(testArr)
+        }
+    }, [dataset])
     return (
         <div className='bg-white p-2 rounded-md'>
             <Text fw={"bold"} fz={"md"} c={"black"}>Unique Values Count</Text>
@@ -21,13 +35,13 @@ function UniqueValueInfo() {
             <div className='mt-6 space-y-2'>
                 
                 <BarChart
-                    h={200}
-                    data={data}
-                    dataKey="month"
+                    h={400}
+                    data={uniqueValueCount}
+                    dataKey="name"
                     orientation="vertical"
                     yAxisProps={{ width: 80 }}
                     barProps={{ radius: 10 }}
-                    series={[{ name: 'Smartphones', color: 'blue.6' }]}
+                    series={[{ name: 'value', color: 'blue.6' }]}
                     withTooltip={false}
                     valueFormatter={(value) => new Intl.NumberFormat('en-US').format(value)}
                     withBarValueLabel
