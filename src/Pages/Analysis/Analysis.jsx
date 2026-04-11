@@ -44,7 +44,7 @@ function Analysis() {
         if(datasetData == null ){
             dispatch(getDatasetSummary(id))
         }
-    }, [ ])
+    }, [datasetData, dispatch, id])
 
     return (
         <>
@@ -95,10 +95,16 @@ function Analysis() {
                     <ActionBars/>
                 </div>
 
-                <div className='mt-6 px-4 md:space-y-0 space-y-4 md:gap-4 md:grid grid-cols-2'>
-                    <NullValueInfo/>
-                    <UniqueValueInfo/>
-                </div>
+                {
+                    datasetData?.total_nulls == 0 ?
+                    <div className='mt-6 px-4'>
+                        <UniqueValueInfo/>
+                    </div> :
+                    <div className='mt-6 px-4 md:space-y-0 space-y-4 md:gap-4 md:grid grid-cols-2'>
+                        <NullValueInfo/>
+                        <UniqueValueInfo/>
+                    </div>
+                }
 
                 <div className='mt-6 px-4'>
                     <InfoChartColumnValueCount/>
