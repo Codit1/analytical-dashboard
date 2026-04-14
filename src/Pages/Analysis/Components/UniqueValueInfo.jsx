@@ -39,7 +39,7 @@ function UniqueValueInfo() {
                     data={uniqueValueCount}
                     dataKey="name"
                     orientation="vertical"
-                    yAxisProps={{ width: 80 }}
+                    yAxisProps={{ width: 140 }}
                     barProps={{ radius: 10 }}
                     series={[{ name: 'value', color: 'blue.6' }]}
                     withTooltip={false}

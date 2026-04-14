@@ -1,10 +1,74 @@
-import React from 'react'
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useState, useEffect } from 'react'
 
 // for mantine imp
 import { Text, Badge, Flex, Table } from '@mantine/core'
 
+// for mantine imp
+import { useSelector } from 'react-redux'
+import { selectUploadData } from '@store/uploadDataset'
+
 function ShowColumnsTypes() {
 
+    const dataset = useSelector(selectUploadData)
+
+    // state to hold columns types
+    const [ columnTypes, setColumnTypes ] = useState([])
+
+    useEffect(() => {
+        if(dataset){
+
+            const types = []
+
+            Object.entries(dataset?.columns_type).forEach(([key, value]) => {
+                if(value == "str"){
+                    types.push({
+                        name: key,
+                        type: "Contains Both letters and Numbers"
+                    })
+                } else if(value == "int64"){
+                    types.push({
+                        name: key,
+                        type: "Numbers Only"
+                    })
+                } else if(value == "float64"){
+                    types.push({
+                        name: key,
+                        type: "Numbers with decimal"
+                    })
+                } else if(value == "bool"){
+                    types.push({
+                        name: key,
+                        type: "Boolean (True/False)"
+                    })
+                } else if(value == "datetime64"){
+                    types.push({
+                        name: key,
+                        type: "Date and Time"
+                    })
+                } else if(value == "object"){
+                    types.push({
+                        name: key,
+                        type: "Contains Text (String)"
+                    })
+                } else{
+                    types.push({
+                        name: key,
+                        type: value
+                    })
+                }
+            })
+
+            setColumnTypes(types)
+        }
+    }, [dataset])
+
+    const renderTypes = columnTypes.map((column, index) => (
+        <Table.Tr key={ index }>
+          <Table.Th w={160}>{column.name}</Table.Th>
+          <Table.Td>{column.type}</Table.Td>
+        </Table.Tr>
+    ))
 
     return (
         <div className='p-2 bg-white rounded-md'>
@@ -20,32 +84,9 @@ function ShowColumnsTypes() {
                 highlightOnHover 
             >
                 <Table.Tbody>
-                    <Table.Tr>
-                        <Table.Th w={160}>Epic name</Table.Th>
-                        <Table.Td>7.x migration</Table.Td>
-                    </Table.Tr>
-
-                    <Table.Tr>
-                    <Table.Th>Status</Table.Th>
-                    <Table.Td>Open</Table.Td>
-                    </Table.Tr>
-
-                    <Table.Tr>
-                    <Table.Th>Total issues</Table.Th>
-                    <Table.Td>135</Table.Td>
-                    </Table.Tr>
-
-                    <Table.Tr>
-                    <Table.Th>Total story points</Table.Th>
-                    <Table.Td>874</Table.Td>
-                    </Table.Tr>
-
-                    <Table.Tr>
-                    <Table.Th>Last updated at</Table.Th>
-                    <Table.Td>September 26, 2024 17:41:26</Table.Td>
-                    </Table.Tr>
+                    {renderTypes}
                 </Table.Tbody>
-                </Table>
+            </Table>
         </div>
     )
 }
