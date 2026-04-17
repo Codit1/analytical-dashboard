@@ -1,41 +1,85 @@
-import React from 'react'
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useState, useEffect } from 'react'
 
 // for mantine imp
-import { Pagination, Table, Text, Button, NativeSelect, ScrollArea, ActionIcon, NumberFormatter, TextInput } from '@mantine/core'
+import { Pagination, Table, Text, ScrollArea, NumberFormatter, LoadingOverlay } from '@mantine/core'
+import { notifications } from '@mantine/notifications';
 
-// for icons imp
-import { ImSearch } from "react-icons/im";
-import { FaFilter } from "react-icons/fa";
+// for router imp
+import { useSearchParams } from 'react-router';
 
-const elements = [
-    { position: 6, mass: 12.011, symbol: 'C', name: 'Carbon' },
-    { position: 7, mass: 14.007, symbol: 'N', name: 'Nitrogen' },
-    { position: 39, mass: 88.906, symbol: 'Y', name: 'Yttrium' },
-    { position: 56, mass: 137.33, symbol: 'Ba', name: 'Barium' },
-    { position: 58, mass: 140.12, symbol: 'Ce', name: 'Cerium' },
-];
+// for redux imp
+import { useSelector, useDispatch } from 'react-redux';
+import { selectColumnData, selectLoadingColumnPagination, selectColumnPaginationData, columnPagination } from '@store/columns';
 
 function Values() {
 
-    const rows = elements.map((element) => (
-        <Table.Tr key={element.name}>
-        <Table.Td>{element.position}</Table.Td>
-        <Table.Td>{element.name}</Table.Td>
+    const dispatch = useDispatch();
+    
+    const [searchParams] = useSearchParams();
+    
+    const id = searchParams.get('id')
+    const columnName = searchParams.get("column")
+
+    const columnData = useSelector(selectColumnData);
+    const loadingColumnPagination = useSelector(selectLoadingColumnPagination);
+    const columnPaginationData = useSelector(selectColumnPaginationData);
+
+    // state to hold colum vaues 
+    const [ columnValues, setColumnValues ] = useState([]);
+
+    const rows = columnValues?.map((value, indx) => (
+        <Table.Tr key={indx}>
+            <Table.Td>{indx++}</Table.Td>
+            <Table.Td>{value}</Table.Td>
         </Table.Tr>
     ));
+
+    // func to handle pagination change
+    const paginationChange = (page) => {
+
+        const pageData = {
+            page: page,
+            limit: 100,
+            dataset_id: id,
+            column: columnName
+        }
+
+        dispatch(columnPagination(pageData)).unwrap()
+        .then((res) => {
+            setColumnValues(res)
+        })
+        .catch(err => {
+            notifications.show({
+                ...err,
+                color: "orange"
+            })
+        })
+    }
+
+    useEffect(() => {
+        
+        setColumnValues(columnData?.values)
+
+    }, [columnData])
+
+
     return (
         <div className='bg-white rounded-md p-2'>
+
+            <LoadingOverlay visible={ loadingColumnPagination }/>
+
             <div>
 
                 <div className='flex items-center justify-between'>
                     <Text fw={"bold"} fz={"md"} >Column Data</Text>
                     <Text fw={"bold"} fz={"md"}>
                         <span>Total: </span>
-                        <NumberFormatter thousandSeparator value={10000}/>
+                        <NumberFormatter thousandSeparator value={columnData?.total_values} />
                     </Text>
                 </div>
 
-                <div className='flex items-end justify-between mt-4 px-6'>
+                {/* <div className='flex items-end justify-between mt-4 px-6'>
                     <div className='flex items-end space-x-4 w-[50%]'>
                         <TextInput
                             label={"Search Column"}
@@ -59,15 +103,21 @@ function Values() {
                             radius={"md"}
                         >Filter</Button>
                     </div>
-                </div>
+                </div> */}
 
                 <div className='mt-4'>
                     <ScrollArea h={300} offsetScrollbars >
-                        <Table highlightOnHover withTableBorder withColumnBorders>
+                        <Table 
+                            highlightOnHover 
+                            withTableBorder 
+                            withColumnBorders
+                            stickyHeader 
+                            // stickyHeaderOffset={60}
+                        >
                             <Table.Thead>
                                 <Table.Tr>
-                                <Table.Th>Element position</Table.Th>
-                                <Table.Th>Element name</Table.Th>
+                                <Table.Th>S/N</Table.Th>
+                                <Table.Th>Vzlues</Table.Th>
                                 </Table.Tr>
                             </Table.Thead>
                             <Table.Tbody>{rows}</Table.Tbody>
@@ -77,7 +127,14 @@ function Values() {
                 </div>
 
                 <div className='w-fit mx-auto mt-4'>
-                    <Pagination total={10} color='#363A38' />
+                    <Pagination 
+                        total={(columnData?.total_values/100).toFixed(0)}
+                        onChange={(value) => {
+                            console.log(value)
+                            paginationChange(value)
+                        }}
+                        color='#363A38' 
+                    />
                 </div>
             </div>
         </div>

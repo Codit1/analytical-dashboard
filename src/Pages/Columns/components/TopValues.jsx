@@ -1,19 +1,36 @@
-import React from 'react'
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useState } from 'react'
 
 // for mantine imp
 import { Progress, Text } from '@mantine/core'
 import { BarChart } from '@mantine/charts'
 
-const data = [
-  { month: 'January', Smartphones: 1200, Laptops: 900, Tablets: 200 },
-  { month: 'February', Smartphones: 1900, Laptops: 1200, Tablets: 400 },
-  { month: 'March', Smartphones: 400, Laptops: 1000, Tablets: 200 },
-  { month: 'April', Smartphones: 1000, Laptops: 200, Tablets: 800 },
-  { month: 'May', Smartphones: 800, Laptops: 1400, Tablets: 1200 },
-  { month: 'June', Smartphones: 750, Laptops: 600, Tablets: 1000 },
-];
+// for redux imp
+import { useSelector } from 'react-redux';
+import { selectColumnData } from '@store/columns';
 
 function TopValues() {
+
+    const columnData = useSelector(selectColumnData);
+
+    // state to hold topvalues structured data
+    const [ topValues, setTopValues ] = useState([])
+
+    useEffect(() => {
+        if(columnData){
+            const strData = []
+
+            Object.entries(columnData?.top_values).forEach(([keys, values]) => {
+                strData.push({
+                    name: keys,
+                    value: values
+                })
+            })
+
+            setTopValues(strData)
+        }
+    }, [columnData])
+
     return (
         <div className='bg-white p-2 rounded-md md:w-[60%]'>
             <Text fw={"bold"} fz={"md"} c={"black"}>Top Values Count</Text>
@@ -21,12 +38,12 @@ function TopValues() {
                 
                 <BarChart
                     h={200}
-                    data={data}
-                    dataKey="month"
+                    data={topValues}
+                    dataKey="name"
                     orientation="vertical"
                     yAxisProps={{ width: 80 }}
                     barProps={{ radius: 10 }}
-                    series={[{ name: 'Smartphones', color: 'blue.6' }]}
+                    series={[{ name: 'value', color: 'blue.6' }]}
                     withTooltip={false}
                     valueFormatter={(value) => new Intl.NumberFormat('en-US').format(value)}
                     withBarValueLabel
