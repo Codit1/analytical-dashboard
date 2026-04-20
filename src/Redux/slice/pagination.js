@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const getDatasetPagination = createAsyncThunk(
     "dataset/get",
     async (data, { rejectWithValue }) => {
         try{
-            const res = await axios.post(`http://127.0.0.1:8000/upload/values/${data.dataset_id}/${data.page}/${data.limit}`)
+            const res = await axios.post(`${API_URL}/upload/values/${data.dataset_id}/${data.page}/${data.limit}`)
 
             console.log(res.data)
 

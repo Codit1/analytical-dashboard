@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const getColumns = createAsyncThunk(
     "columns/get"
     , async (data, { rejectWithValue }) => {
         try {
-            const res = await axios.get(`http://127.0.0.1:8000/datalens/columns/${data.datasetId}/${data.column}`)
+            const res = await axios.get(`${API_URL}/datalens/columns/${data.datasetId}/${data.column}`)
 
             console.log(res.data)
 
@@ -38,7 +40,7 @@ export const columnPagination = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try{
 
-            const res = await axios.get(`http://127.0.0.1:8000/datalens/columns/pagination/${data.dataset_id}/${data.column}/${data.page}/${data.limit}`)
+            const res = await axios.get(`${API_URL}/datalens/columns/pagination/${data.dataset_id}/${data.column}/${data.page}/${data.limit}`)
 
             console.log(res.data)
 

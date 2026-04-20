@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 // func to send/upload dataset to backend
 export const uploadDataset = createAsyncThunk(
@@ -8,7 +10,7 @@ export const uploadDataset = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try{
 
-            const res = await axios.post("http://127.0.0.1:8000/upload/file", data)
+            const res = await axios.post(`${API_URL}/upload/file`, data)
 
             console.log(res.data)
 
@@ -43,7 +45,7 @@ export const getDatasetSummary = createAsyncThunk(
     "dataset/summary",
     async (id, { rejectWithValue }) => {
         try{
-            const res = await axios.get(`http://127.0.0.1:8000/upload/summary/${id}`)
+            const res = await axios.get(`${API_URL}/upload/summary/${id}`)
 
             console.log(res.data)
 
